@@ -1,43 +1,32 @@
-interface InputFieldProps {
-  label: string;
-  placeholder?: string;
-  value: string;
-  type?: string;
-  large?: boolean;
-  unchanged?: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+export interface InputFormProps {
+    label: string
+    placeholder: string
+    value?: string
+    type?: string
+    large?: boolean
+    onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-  label,
-  placeholder = '',
-  value,
-  type = 'text',
-  large = false,
-  unchanged = false,
-  onChange
-}) => {
-  const inputClasses = `
-    w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-    ${large ? 'text-lg py-3 px-4' : 'text-base'}
-    ${unchanged ? 'bg-gray-100 cursor-not-allowed' : 'bg-black'}
-  `.trim();
-
-  return (
-    <div className="flex flex-col space-y-1">
-      <label className="text-sm font-medium text-gray-700">
-        {label}
-      </label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        disabled={unchanged}
-        className={inputClasses}
-      />
-    </div>
-  );
-};
-
-export default InputField;
+export function InputForm({ label, placeholder, value, type, large, onChange }: InputFormProps) {
+    return (
+        <div className="flex flex-col gap-1.5">
+            <label className="text-zinc-600 font-medium text-sm">{label}</label>
+            {large ? (
+                <textarea
+                    className={`bg-white py-2 px-3 border border-zinc-300 placeholder:text-zinc-500 text-zinc-900 shadow-xs rounded-lg focus:ring-[4px] focus:ring-zinc-400/15 focus:outline-none h-24 align-text-top`}
+                    placeholder={placeholder}
+                    value={value || ''}
+                    onChange={onChange}
+                />
+            ) : (
+                <input
+                    className={`bg-white py-2 px-3 border border-zinc-300 placeholder:text-zinc-500 text-zinc-900 shadow-xs rounded-lg focus:ring-[4px] focus:ring-zinc-400/15 focus:outline-none`}
+                    type={type}
+                    placeholder={placeholder}
+                    value={value || ''}
+                    onChange={onChange}
+                />
+            )}
+        </div>
+    )
+}
