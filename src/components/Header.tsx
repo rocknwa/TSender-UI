@@ -1,5 +1,3 @@
-"use client"
-
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { FaGithub } from "react-icons/fa"
 import Image from "next/image"
@@ -12,7 +10,7 @@ export default function Header() {
                     <Image src="/T-Sender.svg" alt="TSender" width={36} height={36} />
                     <h1 className="font-bold text-2xl hidden md:block">TSender</h1>
                 </a>
-                <a
+                    <a
                     href="https://github.com/rocknwa/TSender-UI"
                     target="_blank"
                     rel="noopener noreferrer"

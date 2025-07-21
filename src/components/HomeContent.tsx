@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import AirdropForm from "@/components/AirdropForm"
 import { useAccount } from "wagmi"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { motion, AnimatePresence } from "framer-motion"
 
 // Mock stats for demonstration
@@ -126,13 +127,18 @@ export default function HomeContent() {
                                         Save up to 89% on gas costs with our advanced batch transfer technology.
                                     </p>
                                     
-                                    <motion.button
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                        className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                                    >
-                                        Connect Wallet to Get Started 🚀
-                                    </motion.button>
+                                    <ConnectButton.Custom>
+                                        {({ openConnectModal }) => (
+                                            <motion.button
+                                                onClick={openConnectModal}
+                                                whileHover={{ scale: 1.05 }}
+                                                whileTap={{ scale: 0.95 }}
+                                                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                            >
+                                                Connect Wallet to Get Started 🚀
+                                            </motion.button>
+                                        )}
+                                    </ConnectButton.Custom>
                                 </motion.div>
                             </div>
                         </div>
@@ -276,13 +282,18 @@ export default function HomeContent() {
                                 <p className="text-xl text-blue-100 mb-8">
                                     Join thousands of projects using our platform to distribute tokens efficiently
                                 </p>
-                                <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                    Connect Your Wallet Now 💎
-                                </motion.button>
+                                <ConnectButton.Custom>
+                                    {({ openConnectModal }) => (
+                                        <motion.button
+                                            onClick={openConnectModal}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                                        >
+                                            Connect Your Wallet Now 💎
+                                        </motion.button>
+                                    )}
+                                </ConnectButton.Custom>
                             </div>
                         </motion.div>
                     </motion.div>

@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   },
   basePath: "",
   assetPrefix: "./",
-  trailingStash: true
+  trailingSlash: true
 };
 
 export default nextConfig;
