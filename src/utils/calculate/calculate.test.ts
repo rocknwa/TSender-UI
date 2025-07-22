@@ -4,38 +4,52 @@ import { calculateAmountsInWei, calculateTotalInWei, parseAmounts } from "./calc
 describe("calculateAmountsInWei", () => {
     describe("empty and null inputs", () => {
         it("should return empty array for empty string", () => {
-            expect(calculateAmountsInWei("")).toEqual([]);
+            expect(calculateAmountsInWei("", 18)).toEqual([]);
         });
 
         it("should return empty array for whitespace-only string", () => {
-            expect(calculateAmountsInWei("   ")).toEqual([]);
-            expect(calculateAmountsInWei("\n\n")).toEqual([]);
-            expect(calculateAmountsInWei("\t")).toEqual([]);
+            expect(calculateAmountsInWei("   ", 18)).toEqual([]);
+            expect(calculateAmountsInWei("\n\n", 18)).toEqual([]);
+            expect(calculateAmountsInWei("\t", 18)).toEqual([]);
         });
 
         it("should return empty array for null/undefined inputs", () => {
-            expect(calculateAmountsInWei(null)).toEqual([]);
-            expect(calculateAmountsInWei(undefined)).toEqual([]);
+            expect(calculateAmountsInWei(null, 18)).toEqual([]);
+            expect(calculateAmountsInWei(undefined, 18)).toEqual([]);
         });
     });
 
-    describe("single values", () => {
+    describe("single values with 18 decimals", () => {
         it("should handle single positive number", () => {
-            expect(calculateAmountsInWei("10")).toEqual([BigInt("10000000000000000000")]);
+            expect(calculateAmountsInWei("10", 18)).toEqual([BigInt("10000000000000000000")]);
         });
 
         it("should handle single decimal number", () => {
-            expect(calculateAmountsInWei("3.14")).toEqual([BigInt("3140000000000000000")]);
+            expect(calculateAmountsInWei("3.14", 18)).toEqual([BigInt("3140000000000000000")]);
         });
 
         it("should handle single zero", () => {
-            expect(calculateAmountsInWei("0")).toEqual([BigInt("0")]);
+            expect(calculateAmountsInWei("0", 18)).toEqual([BigInt("0")]);
         });
     });
 
-    describe("comma-separated values", () => {
+    describe("single values with 6 decimals (e.g., USDC)", () => {
+        it("should handle single positive number", () => {
+            expect(calculateAmountsInWei("10", 6)).toEqual([BigInt("10000000")]);
+        });
+
+        it("should handle single decimal number", () => {
+            expect(calculateAmountsInWei("3.14", 6)).toEqual([BigInt("3140000")]);
+        });
+
+        it("should handle high precision decimal number", () => {
+            expect(calculateAmountsInWei("1.234567", 6)).toEqual([BigInt("1234567")]);
+        });
+    });
+
+    describe("comma-separated values with 18 decimals", () => {
         it("should parse comma-separated numbers", () => {
-            expect(calculateAmountsInWei("1,2,3")).toEqual([
+            expect(calculateAmountsInWei("1,2,3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
@@ -43,7 +57,7 @@ describe("calculateAmountsInWei", () => {
         });
 
         it("should parse comma-separated decimals", () => {
-            expect(calculateAmountsInWei("1.5,2.5,3.0")).toEqual([
+            expect(calculateAmountsInWei("1.5,2.5,3.0", 18)).toEqual([
                 BigInt("1500000000000000000"),
                 BigInt("2500000000000000000"),
                 BigInt("3000000000000000000"),
@@ -51,7 +65,7 @@ describe("calculateAmountsInWei", () => {
         });
 
         it("should handle comma-separated with spaces", () => {
-            expect(calculateAmountsInWei("1 , 2 , 3")).toEqual([
+            expect(calculateAmountsInWei("1 , 2 , 3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
@@ -59,9 +73,27 @@ describe("calculateAmountsInWei", () => {
         });
     });
 
-    describe("newline-separated values", () => {
+    describe("comma-separated values with 6 decimals", () => {
+        it("should parse comma-separated numbers", () => {
+            expect(calculateAmountsInWei("1,2,3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
+            ]);
+        });
+
+        it("should parse comma-separated decimals", () => {
+            expect(calculateAmountsInWei("1.5,2.5,3.0", 6)).toEqual([
+                BigInt("1500000"),
+                BigInt("2500000"),
+                BigInt("3000000"),
+            ]);
+        });
+    });
+
+    describe("newline-separated values with 18 decimals", () => {
         it("should parse newline-separated numbers", () => {
-            expect(calculateAmountsInWei("1\n2\n3")).toEqual([
+            expect(calculateAmountsInWei("1\n2\n3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
@@ -69,7 +101,7 @@ describe("calculateAmountsInWei", () => {
         });
 
         it("should parse newline-separated decimals", () => {
-            expect(calculateAmountsInWei("1.5\n2.5\n1")).toEqual([
+            expect(calculateAmountsInWei("1.5\n2.5\n1", 18)).toEqual([
                 BigInt("1500000000000000000"),
                 BigInt("2500000000000000000"),
                 BigInt("1000000000000000000"),
@@ -77,9 +109,27 @@ describe("calculateAmountsInWei", () => {
         });
     });
 
-    describe("mixed separators", () => {
+    describe("newline-separated values with 6 decimals", () => {
+        it("should parse newline-separated numbers", () => {
+            expect(calculateAmountsInWei("1\n2\n3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
+            ]);
+        });
+
+        it("should parse newline-separated decimals", () => {
+            expect(calculateAmountsInWei("1.5\n2.5\n1", 6)).toEqual([
+                BigInt("1500000"),
+                BigInt("2500000"),
+                BigInt("1000000"),
+            ]);
+        });
+    });
+
+    describe("mixed separators with 18 decimals", () => {
         it("should handle both commas and newlines", () => {
-            expect(calculateAmountsInWei("1,2\n3")).toEqual([
+            expect(calculateAmountsInWei("1,2\n3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
@@ -87,7 +137,7 @@ describe("calculateAmountsInWei", () => {
         });
 
         it("should handle complex mixed format", () => {
-            expect(calculateAmountsInWei("1.5,2\n3.5")).toEqual([
+            expect(calculateAmountsInWei("1.5,2\n3.5", 18)).toEqual([
                 BigInt("1500000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3500000000000000000"),
@@ -95,61 +145,99 @@ describe("calculateAmountsInWei", () => {
         });
     });
 
+    describe("mixed separators with 6 decimals", () => {
+        it("should handle both commas and newlines", () => {
+            expect(calculateAmountsInWei("1,2\n3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
+            ]);
+        });
+
+        it("should handle complex mixed format", () => {
+            expect(calculateAmountsInWei("1.5,2\n3.5", 6)).toEqual([
+                BigInt("1500000"),
+                BigInt("2000000"),
+                BigInt("3500000"),
+            ]);
+        });
+    });
+
     describe("edge cases and invalid inputs", () => {
-        it("should handle invalid number strings", () => {
-            expect(calculateAmountsInWei("1,abc,3")).toEqual([
+        it("should handle invalid number strings with 18 decimals", () => {
+            expect(calculateAmountsInWei("1,abc,3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("3000000000000000000"),
+            ]);
+        });
+
+        it("should handle invalid number strings with 6 decimals", () => {
+            expect(calculateAmountsInWei("1,abc,3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("3000000"),
             ]);
         });
 
         it("should handle empty values between separators", () => {
-            expect(calculateAmountsInWei("1,,3")).toEqual([
+            expect(calculateAmountsInWei("1,,3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("3000000000000000000"),
             ]);
-            expect(calculateAmountsInWei("1,\n,3")).toEqual([
-                BigInt("1000000000000000000"),
-                BigInt("3000000000000000000"),
+            expect(calculateAmountsInWei("1,\n,3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("3000000"),
             ]);
         });
 
         it("should handle trailing separators", () => {
-            expect(calculateAmountsInWei("1,2,3,")).toEqual([
+            expect(calculateAmountsInWei("1,2,3,", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
             ]);
-            expect(calculateAmountsInWei("1\n2\n3\n")).toEqual([
-                BigInt("1000000000000000000"),
-                BigInt("2000000000000000000"),
-                BigInt("3000000000000000000"),
+            expect(calculateAmountsInWei("1\n2\n3\n", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
             ]);
         });
 
         it("should handle leading separators", () => {
-            expect(calculateAmountsInWei(",1,2,3")).toEqual([
+            expect(calculateAmountsInWei(",1,2,3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
             ]);
-            expect(calculateAmountsInWei("\n1\n2\n3")).toEqual([
-                BigInt("1000000000000000000"),
-                BigInt("2000000000000000000"),
-                BigInt("3000000000000000000"),
+            expect(calculateAmountsInWei("\n1\n2\n3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
             ]);
         });
 
         it("should handle multiple consecutive separators", () => {
-            expect(calculateAmountsInWei("1,,,2\n\n\n3")).toEqual([
+            expect(calculateAmountsInWei("1,,,2\n\n\n3", 18)).toEqual([
                 BigInt("1000000000000000000"),
                 BigInt("2000000000000000000"),
                 BigInt("3000000000000000000"),
             ]);
+            expect(calculateAmountsInWei("1,,,2\n\n\n3", 6)).toEqual([
+                BigInt("1000000"),
+                BigInt("2000000"),
+                BigInt("3000000"),
+            ]);
         });
 
         it("should handle only invalid inputs", () => {
-            expect(calculateAmountsInWei("abc,def,xyz")).toEqual([]);
+            expect(calculateAmountsInWei("abc,def,xyz", 18)).toEqual([]);
+            expect(calculateAmountsInWei("abc,def,xyz", 6)).toEqual([]);
+        });
+
+        it("should handle high precision with 6 decimals", () => {
+            expect(calculateAmountsInWei("1.234567,2.345678", 6)).toEqual([
+                BigInt("1234567"),
+                BigInt("2345678"),
+            ]);
         });
     });
 });

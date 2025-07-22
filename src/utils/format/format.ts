@@ -1,19 +1,15 @@
-import { formatEther } from "viem";
+import { formatUnits } from "viem";
 
-export function formatTokenAmount(amount: bigint, decimals?: number): string {
+export function formatTokenAmount(amount: bigint | undefined, decimals: number | undefined): string {
     if (decimals === undefined || amount === undefined) {
         return "0";
     }
-    // Adjust amount to 18 decimals (Ether-like) before formatting
-    const adjustedAmount = amount * BigInt(10 ** (18 - decimals));
-    return formatEther(adjustedAmount);
+    return formatUnits(amount, decimals);
 }
 
-export function formatBalance(balance: bigint, decimals?: number): string {
+export function formatBalance(balance: bigint | undefined, decimals: number | undefined): string {
     if (balance === undefined || decimals === undefined) {
         return "0";
     }
-    // Adjust balance to 18 decimals (Ether-like) before formatting
-    const adjustedBalance = balance * BigInt(10 ** (18 - decimals));
-    return formatEther(adjustedBalance);
+    return formatUnits(balance, decimals);
 }

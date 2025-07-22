@@ -63,8 +63,16 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
     hash,
   });
 
-  const amountsInWei = useMemo(() => calculateAmountsInWei(amounts), [amounts]);
-  const totalInWei = useMemo(() => calculateTotalInWei(amountsInWei), [amountsInWei]);
+  const decimals = tokenData?.[0]?.result as number | undefined;
+
+  const amountsInWei = useMemo(
+    () => calculateAmountsInWei(amounts, decimals || 18),
+    [amounts, decimals]
+  );
+  const totalInWei = useMemo(
+    () => calculateTotalInWei(amountsInWei),
+    [amountsInWei]
+  );
   const recipientList = useMemo(
     () => recipients.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr !== ""),
     [recipients]
@@ -154,8 +162,6 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
           address: tokenAddress as `0x${string}`,
           functionName: "approve",
           args: [tSenderAddress as `0x${string}`, totalInWei],
-          gas: BigInt(100000),
-          nonce,
         });
         const approvalReceipt = await waitForTransactionReceipt(config, {
           hash: approvalHash,
@@ -170,8 +176,6 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
         address: tSenderAddress as `0x${string}`,
         functionName: "airdropERC20",
         args: [tokenAddress, recipientList as `0x${string}`[], amountsInWei, totalInWei],
-        gas: BigInt(50000 + 30000 * recipientList.length),
-        nonce: nonce + (result < totalInWei ? 1 : 0),
       });
 
       console.log("Airdrop transaction hash:", airdropHash);
@@ -236,10 +240,10 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
     return !account.isConnected
       ? "Connect Wallet"
       : !hasEnoughTokens && tokenAddress
-      ? "Insufficient token balance"
-      : isUnsafeMode
-      ? "Send Tokens (Unsafe)"
-      : "Send Tokens";
+        ? "Insufficient token balance"
+        : isUnsafeMode
+          ? "Send Tokens (Unsafe)"
+          : "Send Tokens";
   }
 
   useEffect(() => {
@@ -277,9 +281,8 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
 
   return (
     <div
-      className={`max-w-2xl min-w-full xl:min-w-lg w-full lg:mx-auto p-6 flex flex-col gap-6 bg-white rounded-xl ring-[4px] border-2 ${
-        isUnsafeMode ? "border-red-500 ring-red-500/25" : "border-blue-500 ring-blue-500/25"
-      }`}
+      className={`max-w-2xl min-w-full xl:min-w-lg w-full lg:mx-auto p-6 flex flex-col gap-6 bg-white rounded-xl ring-[4px] border-2 ${isUnsafeMode ? "border-red-500 ring-red-500/25" : "border-blue-500 ring-blue-500/25"
+        }`}
     >
       <ToastContainer />
       <div className="flex items-center justify-between">
@@ -383,9 +386,8 @@ export default function AirdropForm({ isUnsafeMode, onModeChange }: AirdropFormP
         )}
 
         <button
-          className={`cursor-pointer flex items-center justify-center w-full py-3 rounded-[9px] text-white transition-colors font-semibold relative border ${
-            isUnsafeMode ? "bg-red-500 hover:bg-red-600 border-red-500" : "bg-blue-500 hover:bg-blue-600 border-blue-500"
-          } ${!hasEnoughTokens && tokenAddress ? "opacity-50 cursor-not-allowed" : ""}`}
+          className={`cursor-pointer flex items-center justify-center w-full py-3 rounded-[9px] text-white transition-colors font-semibold relative border ${isUnsafeMode ? "bg-red-500 hover:bg-red-600 border-red-500" : "bg-blue-500 hover:bg-blue-600 border-blue-500"
+            } ${!hasEnoughTokens && tokenAddress ? "opacity-50 cursor-not-allowed" : ""}`}
           onClick={handleSubmit}
           disabled={isPending || (!hasEnoughTokens && tokenAddress !== "") || !account.isConnected}
         >

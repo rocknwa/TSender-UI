@@ -1,6 +1,6 @@
-import { parseEther } from "viem";
+import { parseUnits } from "viem";
 
-export function calculateAmountsInWei(amounts: string | null | undefined): bigint[] {
+export function calculateAmountsInWei(amounts: string | null | undefined, decimals: number = 18): bigint[] {
     if (!amounts || amounts.trim() === '') {
         return [];
     }
@@ -11,7 +11,8 @@ export function calculateAmountsInWei(amounts: string | null | undefined): bigin
             .filter(amt => amt !== '')
             .map(amt => {
                 try {
-                    return parseEther(amt);
+                    // Use parseUnits to convert the amount to the correct number of decimals
+                    return parseUnits(amt, decimals);
                 } catch {
                     return null; // Return null for invalid numbers
                 }
